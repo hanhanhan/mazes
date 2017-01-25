@@ -83,43 +83,38 @@ if (unvisitedNeighbors.length > 0) {
 };
 
 function drawNextStep() {
+    // mark current cell as visited
+    currentCell.visited = true;
+
     // If there's an unvisited neighbor....
     var nextCell = currentCell.checkRandomNeighbor();
     if (nextCell) {
         // push visited cell to the stack on each round:
         stack.push(currentCell);
 
-        console.log('found a neighbor! pushed to stack:');
-        console.log(stack);
-
-        // remove cell walls accordingly and redraw
+        // remove cell walls accordingly and redraw first cell
         removeWalls(currentCell, nextCell);
-        //currentCell.draw();
-        //nextCell.draw();
 
-        // set currentCell for the next round and draw it:
+        // update state for the next iteration:
+        var previousCell = currentCell;
         currentCell = nextCell;
 
-        // mark next cell as visited
-        nextCell.visited = true;
-
+        // redraw both cells to show their new states:
+        previousCell.draw();
+        currentCell.draw();
     } else if (stack.length > 0) {
-
-        // redraw the currentCell
-        // currentCell.draw();
-
-        // if we ran out of neighbors, revisit the last visited cell and start over!
+        // update state for the next iteration:
+        var previousCell = currentCell;
+            // if we ran out of neighbors, revisit the last visited cell and start over!
         currentCell = stack.pop();
 
-        console.log('popped one off the stack, backtracking!');
-        console.log(stack);
+        // redraw both cells to show new state
+        previousCell.draw();
+        currentCell.draw();
     } else {
         // if no more neighbors and the stack is empty, we're done! show reset button!
         restartButton.style.display = 'block';
     }
-
-    // LAZY SOLUTION FOR NOW: just redraw the entire grid each time
-    grid.forEach(function(cell){ cell.draw();});
 
 }
 
@@ -171,16 +166,11 @@ function initializeMazeGenerator() {
     currentCell.visited = true;
     currentCell.draw();
 
-
-    console.log(grid);
-
-
     // DOM stuff:
     restartButton.style.display = 'none';
 }
 
 initializeMazeGenerator();
-
 
 // * * * * * * * * * * HELPER FUNCTIONS * * * * * * * * * * *
 function getGridIndex(row, col) {
